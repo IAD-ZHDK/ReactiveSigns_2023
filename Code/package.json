@@ -21,7 +21,10 @@
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
+    "dat.gui": "^0.7.9",
     "html-webpack-plugin": "^5.5.3",
+    "osc-js": "^2.4.0",
+    "p5": "^1.7.0",
     "util": "^0.12.5"
   }
 }

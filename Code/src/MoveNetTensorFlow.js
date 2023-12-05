@@ -10,8 +10,6 @@ import * as poseDetection from '@tensorflow-models/pose-detection';
 import '@tensorflow/tfjs-backend-webgl';
 import { stream_width, stream_height } from './webcam.js'
 
-
-
 //import '@tensorflow/tfjs-backend-webgpu';
 
 export let inferenceTimeSum = 0, lastPanelUpdate = 0, startInferenceTime = 0, numInferences = 0;
@@ -24,25 +22,24 @@ let lastPoseUpdate = 0;
 
 export const AdjacentPairs = [[0, 1], [0, 2], [1, 3], [2, 4], [5, 6], [5, 7], [5, 11], [6, 8], [6, 12], [7, 9], [8, 10], [11, 12], [11, 13], [12, 14], [13, 15], [14, 16]]
 
-
-export const POSE_CONFIG = {
+export let POSE_CONFIG = {
     //maxPoses: 3,
     type: 'MULTIPOSE_LIGHTNING',
     scoreThreshold: 0.3,
     customModel: '',
-    modelUrl: '/assets/models/movenet/model.json',
+    modelUrl: '/model.json',
     enableSmoothing: true,
     enableTracking: true
 };
 // 1920 X 1080
-export const STATE = {
+export let STATE = {
     camera: { targetFPS: 60, sizeOption: '640 X 480' },
     backend: '',
     flags: {},
     modelConfig: POSE_CONFIG,
 };
 
-const detectorConfig = {
+let detectorConfig = {
     modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
     enableTracking: POSE_CONFIG.enableTracking,
     modelUrl: POSE_CONFIG.modelUrl,
@@ -55,7 +52,9 @@ let detector;
 let videoElement;
 
 export async function setupMoveNet(video) {
+
     console.log("setupMoveNet");
+    detectorConfig.modelUrl = POSE_CONFIG.modelUrl;
     videoElement = video;
     //stopMoveNet() // incase it's already running 
 

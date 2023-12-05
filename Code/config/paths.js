@@ -11,5 +11,5 @@ module.exports = {
   public: path.resolve(__dirname, '../public'),
 
   // template files
-  templates: path.resolve(__dirname, '../../Poster_Templates/demo_poster_simple/'),
+  templates: path.resolve(__dirname, '../demo/demo_poster_simple/'),
 }

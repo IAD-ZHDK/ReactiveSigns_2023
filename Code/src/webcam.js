@@ -1,5 +1,3 @@
-//import {extractFaces} from './faceAPI.js'
-
 export let stream_width = 0;
 export let stream_height = 0;
 
@@ -41,8 +39,8 @@ export class Camera {
      stream_width = camera.video.videoWidth;
      stream_height = camera.video.videoHeight;
     // Must set below two lines, otherwise video element doesn't show.
-    camera.video.width = stream_width;
-    camera.video.height = stream_height;
+    camera.video.width = stream_width/4;
+    camera.video.height = stream_height/4;
 
     console.log('Width: ' + stream_width + 'px');
     console.log('Height: ' + stream_height + 'px');
@@ -73,4 +71,6 @@ export class Camera {
     */
 
   }
+
+
 }
