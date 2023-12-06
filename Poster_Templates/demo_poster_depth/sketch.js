@@ -1,7 +1,7 @@
 
 // depthData : represents an array of depth data. Only available with setupOSC(true)
-// depthW: The horizontal resolution of the dataFiltered array
-// depthH: The vertical resolution of the dataFiltered array
+// depthW: The horizontal resolution of the data array
+// depthH: The vertical resolution of the data array
 
 
 function setup() {
@@ -11,8 +11,8 @@ function setup() {
 
 function draw() {
   background(0);
-  lineEffect()
-  //pixelEffect()
+  //lineEffect()
+  pixelEffect()
  /*important!*/ poster.posterTasks(); // do not remove this last line!
 }
 
@@ -26,7 +26,7 @@ function pixelEffect() {
     for (let j = 0; j<poster.depthW; j+=2) {
       let index = (i*poster.depthW)+j;
         if (poster.depthData[index] > 0.0) {
-        fill(int(dataFiltered[index]))
+        fill(int(poster.depthData[index]))
         rect(spaceX*j, spaceY*i, 5, 5);
       }
     }

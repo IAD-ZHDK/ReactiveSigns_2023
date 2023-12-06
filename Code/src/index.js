@@ -184,10 +184,8 @@ export function posterTasks() {
        averageCenterPoint.x += boxCenterX;
        averageCenterPoint.y += boxCenterY;
     }
- 
     averageCenterPoint.x = averageCenterPoint.x / poses.length;
     averageCenterPoint.y = averageCenterPoint.y / poses.length;
-    
     if (!isNaN(averageCenterPoint.x) && !isNaN(averageCenterPoint.y)) {
       updatePosition(1-averageCenterPoint.x, averageCenterPoint.y, 1.0)
     } else {
@@ -280,26 +278,58 @@ function updatePosition(x, y, z) {
 }
 
 export function getWindowWidth() {
+  let posterWidth;
+  let displayWidth = window.innerWidth;
+  let displayHeight = window.innerHeight;
+  //const body = document.getElementsByTagName('body'); // 
+  let body = select('body');
+
+  if (body.style('transform') == 'matrix(0, 1, -1, 0, 0, 0)' || body.style('transform') == 'matrix(0, -1, 1, 0, 0, 0)') {
+    // workaround for rotated display
+    displayWidth = window.innerHeight;
+    displayHeight = window.innerWidth;
+  }
+
   let aspectRatioWH = pageWidth / pageHeight; // width to height
   let aspectRatioHW = pageHeight / pageWidth; // height to width
-  let currentRatio = window.innerWidth / window.innerHeight;
-  let posterWidth = Math.floor(window.innerHeight * aspectRatioWH);     // for landscape mode
-  if (window.innerWidth < window.innerHeight * aspectRatioWH) {
+
+  let currentRatio = displayWidth / displayHeight;
+
+  if (displayWidth < displayHeight * aspectRatioWH) {
     // for portrait mode
-    posterWidth = window.innerWidth;
+    posterWidth = displayWidth;
+  } else {
+    // for landscape mode
+    posterWidth = Math.floor(displayHeight * aspectRatioWH);
   }
   return posterWidth;
 }
 
 export function getWindowHeight() {
+  let posterHeight;
+  let displayWidth = window.innerWidth;
+  let displayHeight = window.innerHeight;
+  let body = select('body');
+  if (body.style('transform') == 'matrix(0, 1, -1, 0, 0, 0)' || body.style('transform') == 'matrix(0, -1, 1, 0, 0, 0)') {
+    // workaround for rotated display
+   displayWidth = window.innerHeight;
+    displayHeight = window.innerWidth;
+  }
   let aspectRatioWH = pageWidth / pageHeight; // width to height
   let aspectRatioHW = pageHeight / pageWidth; // height to width
-  let posterHeight = window.innerHeight;   // for landscape mode
-  if (window.innerWidth < window.innerHeight * aspectRatioWH) {
+  if (displayWidth < displayHeight * aspectRatioWH) {
     // for portrait mode
-    posterHeight = Math.floor(window.innerWidth * aspectRatioHW);
+    posterHeight = Math.floor(displayWidth * aspectRatioHW);
+  } else {
+    // for landscape mode
+    posterHeight = displayHeight;
   }
-  console.log("fullscreenMode = " + fullscreenMode);
+  if (displayHeight == screen.height || displayWidth == screen.height) {
+    fullscreenMode = true;
+  } else {
+    fullscreenMode = false;
+  }
+
   return posterHeight;
 }
 

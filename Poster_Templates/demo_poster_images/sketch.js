@@ -33,7 +33,7 @@ function draw() {
 
 
 function getindex(vector) {
-  let normal = map(vector.x, 0.2, 0.8,0.0,1.0) // make sure we really get to the first and last frame 
+  let normal = map(vector.x, 0.2, 0.8, 0.0, 1.0) // make sure we really get to the first and last frame 
   let max = imagCount-1
   let GoalIndex= round(imagCount*normal); // find index position of image based on normal of position x
       GoalIndex = constrain(GoalIndex,0,max);

@@ -47,29 +47,6 @@ export class Camera {
 
     return camera;
 
-    /*
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(function (stream) {
-          webCamStream.srcObject = stream;
-          try {
-            webcamPromise = webCamStream.play();
-          } catch (e) {
-            console.log(e)
-          }
-          let stream_settings = stream.getVideoTracks()[0].getSettings();
-    
-          stream_width = stream_settings.width;
-          stream_height = stream_settings.height;
-    
-          console.log('Width: ' + stream_width + 'px');
-          console.log('Height: ' + stream_height + 'px');
-        })
-        .catch(function (e) {
-          console.log(e)
-        });
-    }
-    */
-
   }
 
 
