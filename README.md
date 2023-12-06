@@ -46,3 +46,54 @@ These variables provide units which are safer than using pixel coordinates.
 vw // 1 percent of viewport width
 vh // 1  percent of viewport height
 ```
+
+#  Testing your code on the duel display
+
+The monitors and the computer have been setup to make testing as fast as possible.
+
+Let's say you want to test out the folder called "my_demo" in the Poster_Templates:
+
+```bash 
+│   ├── Poster_Templates
+│   │   ├── my_demo
+│   │   │   ├── index.html
+│   │   │   ├── sketch.js
+│   │   ├── demo_poster_3D
+│   │   ├── demo_poster_images
+│   │   ├── demo_poster_simple
+│   │   ├── demo_poster_depth
+│   │   ├── libraries
+│   │   ├── style.cs
+│
+
+```
+
+- Copy the "my_demo" folder to a USB thumb-drive, and rename the folder "Poster".
+- Turn on the Dual-Monitor PC if necessary 
+- Close any open program windows 
+- If the screen is rotated, click the following icon to set it to portrait 
+
+![icon](/Raw/iconPortrait.png?raw=true)
+
+- If "Poster" already exists on the desktop of the Dual-Monitor PC, delete it.
+- Don't delete or move anything else!
+- Move "Poster" to the desktop of the Dual-Monitor PC.
+- Click the "startPoster" icon on the desktop 
+- Your project should now run after a few seconds
+
+
+#  Running realSense OSC (rs2wsBlob) - Optional
+The Processing (JAVA) application connects to the realsense camera, and provides all the data over OSC. 
+
+To run, install [Processing]( https://processing.org/download).
+
+Navigate to the rs2wsBlob folder, and open any file with Processing.
+
+Install the following libraries via the Library Manager
+
+- bildspur.realsense
+- controlP5
+- oscP5
+- opencv
+
+Hit the play button.
