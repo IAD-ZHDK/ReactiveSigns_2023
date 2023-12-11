@@ -2,7 +2,7 @@ import P5 from 'p5';
 import { Camera } from './webcam.js'
 import { setupMoveNet, stopMoveNet, POSE_CONFIG, poses, AdjacentPairs } from './MoveNetTensorFlow.js'
 import { webCamSketch } from './debugDisplay.js'
-import { setUpGui, dragElement} from './GUI.js'
+import { setUpGui, dragElement } from './GUI.js'
 import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH } from './OSC_Control.js'
 
 // debug gui
@@ -51,9 +51,10 @@ export function setup(p5Instance, modelURL, _enableDepth) {
   correctAspectRatio();
   mainP5Sketch = p5Instance;
   mainP5Sketch.mousePressed = function () {
-  if(mainP5Sketch.mouseX>0 && mainP5Sketch.mouseY>0 && mainP5Sketch.mouseX<width && mainP5Sketch.mouseY<height)
-       openFullscreen();
+    if (mainP5Sketch.mouseX > 0 && mainP5Sketch.mouseY > 0 && mainP5Sketch.mouseX < width && mainP5Sketch.mouseY < height)
+      openFullscreen();
   }
+
   document.addEventListener('fullscreenchange', (event) => {
     // document.fullscreenElement will point to the element that
     // is in fullscreen mode if there is one. If there isn't one,
@@ -69,79 +70,90 @@ export function setup(p5Instance, modelURL, _enableDepth) {
     }
   });
   window.onresize = resized;
+
+
+  document.addEventListener('keypress', (event) => {
+    // this is for passing keyboard events to parent when in presentation mode
+    try {
+      window.parent.trackingCallback(event.code);
+    } catch (e) {
+    }
+  });
+
+
 }
 
 
 document.addEventListener("DOMContentLoaded", DOMContentLoadedEvent, false)
 async function DOMContentLoadedEvent() {
- // let webCamStream = setupWebCamPreview();
+  // let webCamStream = setupWebCamPreview();
   gui = setUpGui(Settings, datGuiCallback);
 }
 
 async function setupWebCamPreview() {
   try {
-  webCamWrapper = document.createElement('div');
-  document.body.appendChild(webCamWrapper);
-  webCamWrapper.id = "canvas-wrapper";
-  let webCamStream = document.createElement('video');
-  webCamStream.id = "webCam";
-  webCamStream.width = "1";
-  webCamStream.height = "1";
-  let p5Container = document.createElement('div');
-  p5Container.id = "output";
-  webCamWrapper.appendChild(p5Container);
-  webCamWrapper.appendChild(webCamStream);
-  camera = await Camera.setup(webCamStream);
-  poseDetection = await setupMoveNet(webCamStream);
-  p5Container.width = camera.video.width;
-  p5Container.height = camera.video.height;
-  new P5(webCamSketch, p5Container);
-  dragElement(document.getElementById(webCamWrapper.id));
-  } catch(e) {
+    webCamWrapper = document.createElement('div');
+    document.body.appendChild(webCamWrapper);
+    webCamWrapper.id = "canvas-wrapper";
+    let webCamStream = document.createElement('video');
+    webCamStream.id = "webCam";
+    webCamStream.width = "1";
+    webCamStream.height = "1";
+    let p5Container = document.createElement('div');
+    p5Container.id = "output";
+    webCamWrapper.appendChild(p5Container);
+    webCamWrapper.appendChild(webCamStream);
+    camera = await Camera.setup(webCamStream);
+    poseDetection = await setupMoveNet(webCamStream);
+    p5Container.width = camera.video.width;
+    p5Container.height = camera.video.height;
+    new P5(webCamSketch, p5Container);
+    dragElement(document.getElementById(webCamWrapper.id));
+  } catch (e) {
     console.log(e);
   }
 }
-function showWebCamPreview(enabled){
+function showWebCamPreview(enabled) {
   if (webCamWrapper !== undefined) {
-  let element = document.getElementById(webCamWrapper.id)
-  if (element !== null) {
-    if (enabled && Settings.poseDetection == true) {
-      element.style.visibility = "visible";
-    }else {
-      element.style.visibility = "hidden";
-    }
+    let element = document.getElementById(webCamWrapper.id)
+    if (element !== null) {
+      if (enabled && Settings.poseDetection == true) {
+        element.style.visibility = "visible";
+      } else {
+        element.style.visibility = "hidden";
+      }
       // Do something with the element
-  }
- //
+    }
+    //
   }
 }
 
 async function disableWebCamPreview() {
-  stopMoveNet() 
-  try{
-  const element = document.getElementById(webCamWrapper.id);
-  element.remove(); // Removes the div with the 'div-02' id
-  } catch(e) {
-  console.log(e)
+  stopMoveNet()
+  try {
+    const element = document.getElementById(webCamWrapper.id);
+    element.remove(); // Removes the div with the 'div-02' id
+  } catch (e) {
+    console.log(e)
   }
 }
 
 function datGuiCallback() {
   // callback
-/*
-  let webcam = document.getElementById("canvas-wrapper");
-  if (Settings.showWebcam) {
-      webcam.style.display = "block";
-  } else {
-      webcam.style.display = "none";
-  }
-*/
-console.log(Settings.poseDetection);
- if (!Settings.poseDetection) {
+  /*
+    let webcam = document.getElementById("canvas-wrapper");
+    if (Settings.showWebcam) {
+        webcam.style.display = "block";
+    } else {
+        webcam.style.display = "none";
+    }
+  */
+  console.log(Settings.poseDetection);
+  if (!Settings.poseDetection) {
     disableWebCamPreview();
   } else {
-   setupWebCamPreview();
-   }
+    setupWebCamPreview();
+  }
 }
 
 
@@ -149,7 +161,7 @@ console.log(Settings.poseDetection);
 function resized() {
   cameraSave(); // work around for play.js
   mainP5Sketch.resizeCanvas(getWindowWidth(), getWindowHeight());
- cameraRestore(); // work around for play.js
+  cameraRestore(); // work around for play.js
   correctAspectRatio();
   try {
     mainP5Sketch.windowScaled();
@@ -175,43 +187,44 @@ function cameraRestore() {
 
 export function posterTasks() {
   if (poses != undefined && Settings.poseDetection == true) {
-     // Get center point from all posses 
-    let averageCenterPoint = {x:0,y:0};
+    // Get center point from all posses 
+    let averageCenterPoint = { x: 0, y: 0 };
     for (const pose of poses) {
-     // let nosePosition = pose.keypoints[0]; // based off nose position 
-       let boxCenterX = pose.box.xMin+(pose.box.width/2);
-       let boxCenterY = pose.box.yMin+(pose.box.height/2);
-       averageCenterPoint.x += boxCenterX;
-       averageCenterPoint.y += boxCenterY;
+      // let nosePosition = pose.keypoints[0]; // based off nose position 
+      let boxCenterX = pose.box.xMin + (pose.box.width / 2);
+      let boxCenterY = pose.box.yMin + (pose.box.height / 2);
+      averageCenterPoint.x += boxCenterX;
+      averageCenterPoint.y += boxCenterY;
     }
     averageCenterPoint.x = averageCenterPoint.x / poses.length;
     averageCenterPoint.y = averageCenterPoint.y / poses.length;
     if (!isNaN(averageCenterPoint.x) && !isNaN(averageCenterPoint.y)) {
-      updatePosition(1-averageCenterPoint.x, averageCenterPoint.y, 1.0)
+      updatePosition(1 - averageCenterPoint.x, averageCenterPoint.y, 1.0)
     } else {
       updatePosition(0.5, 0.5, 1.0)
     }
-  } else if (window.performance.now()-lastOSC < 1000 && realsensePos != undefined) {
+  } else if (window.performance.now() - lastOSC < 1000 && realsensePos != undefined) {
     oscSignal = true;
-   // realsense data available over osc
+    // realsense data available over osc
     updatePosition(realsensePos.x, realsensePos.y, realsensePos.z)
     if (enableDepth) {
       depthData = OSCdepthData;
       depthW = OSCdepthW; // width of data array
       depthH = OSCdepthH; // width of height array
-    } 
-  }else {
+    }
+  } else {
     oscSignal = false;
     // or just use mouse
-    let mouseX =  mainP5Sketch.mouseX / mainP5Sketch.width;
-    mouseX = mainP5Sketch.constrain(mouseX,0,1)
-    let mouseY =  mainP5Sketch.mouseY / mainP5Sketch.height;
-    mouseY = mainP5Sketch.constrain(mouseY,0,1)
+    let mouseX = mainP5Sketch.mouseX / mainP5Sketch.width;
+    mouseX = mainP5Sketch.constrain(mouseX, 0, 1)
+    let mouseY = mainP5Sketch.mouseY / mainP5Sketch.height;
+    mouseY = mainP5Sketch.constrain(mouseY, 0, 1)
     updatePosition(mouseX, mouseY, 1.0)
   }
 
   // show helplines when outside of fullscreen mode
   let debug = true;
+  console.log(fullscreenMode);
   if (!fullscreenMode && debug) {
     gui.show();
     showWebCamPreview(true);
@@ -238,7 +251,7 @@ export function posterTasks() {
     }
     mainP5Sketch.fill(0, 180, 180);
     mainP5Sketch.noStroke();
-    mainP5Sketch.circle(position.x, position.y, position.z*10);
+    mainP5Sketch.circle(position.x, position.y, position.z * 10);
     mainP5Sketch.pop();
   } else {
     gui.hide();
@@ -312,7 +325,7 @@ export function getWindowHeight() {
   let body = select('body');
   if (body.style('transform') == 'matrix(0, 1, -1, 0, 0, 0)' || body.style('transform') == 'matrix(0, -1, 1, 0, 0, 0)') {
     // workaround for rotated display
-   displayWidth = window.innerHeight;
+    displayWidth = window.innerHeight;
     displayHeight = window.innerWidth;
   }
   let aspectRatioWH = pageWidth / pageHeight; // width to height
@@ -324,7 +337,10 @@ export function getWindowHeight() {
     // for landscape mode
     posterHeight = displayHeight;
   }
-  if (displayHeight == screen.height || displayWidth == screen.height) {
+  console.log(displayHeight);
+  console.log(displayWidth);
+  
+  if (displayHeight == screen.height || displayWidth == screen.height || displayWidth == screen.width || displayHeight == screen.width) {
     fullscreenMode = true;
   } else {
     fullscreenMode = false;
