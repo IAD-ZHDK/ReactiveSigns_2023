@@ -3,7 +3,7 @@ import { Camera } from './webcam.js'
 import { setupMoveNet, stopMoveNet, POSE_CONFIG, poses, AdjacentPairs } from './MoveNetTensorFlow.js'
 import { webCamSketch } from './debugDisplay.js'
 import { setUpGui, dragElement } from './GUI.js'
-import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH } from './OSC_Control.js'
+import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH, OSCtracking} from './OSC_Control.js'
 
 // debug gui
 let Settings = {
@@ -23,6 +23,8 @@ export let skeletons = poses;
 export let depthData;
 export let depthW; // width of data array
 export let depthH; // width of height array
+export let tracking; // width of height array
+export let debug = true;
 
 // helper variables for scalable positioning
 export const screens = [{ x: 0, y: 0, w: 100, h: 100, cntX: 50, cntY: 50 }, { x: 0, y: 0, w: 100, h: 100, cntX: 50, cntY: 50 }]
@@ -207,6 +209,7 @@ export function posterTasks() {
     oscSignal = true;
     // realsense data available over osc
     updatePosition(realsensePos.x, realsensePos.y, realsensePos.z)
+    tracking = OSCtracking;
     if (enableDepth) {
       depthData = OSCdepthData;
       depthW = OSCdepthW; // width of data array
@@ -223,7 +226,7 @@ export function posterTasks() {
   }
 
   // show helplines when outside of fullscreen mode
-  let debug = true;
+ 
   console.log(fullscreenMode);
   if (!fullscreenMode && debug) {
     gui.show();
@@ -238,8 +241,9 @@ export function posterTasks() {
     fpsAverage += mainP5Sketch.frameRate() * 0.1;
     mainP5Sketch.textSize(1.2 * vw);
     mainP5Sketch.textAlign(mainP5Sketch.LEFT, mainP5Sketch.TOP);
-    mainP5Sketch.text("fps: " + Math.floor(fpsAverage), screens[0].x + vw, screens[0].y + vh);
-    mainP5Sketch.text("Streaming: " + oscSignal, screens[0].x + vw, screens[0].y + vh + vh + vh);
+    mainP5Sketch.text("fps: " + Math.floor(fpsAverage), screens[0].x + vw, screens[0].y + vh*1);
+    mainP5Sketch.text("Streaming: " + oscSignal, screens[0].x + vw, screens[0].y + vh*3);
+    mainP5Sketch.text("Tracking: " + tracking, screens[0].x + vw, screens[0].y + vh*5);
     mainP5Sketch.noFill();
     mainP5Sketch.stroke(0, 180, 180);
     mainP5Sketch.rectMode(CORNER);
@@ -347,7 +351,7 @@ export function getWindowHeight() {
   }
 
   return posterHeight;
-}
+} 
 
 function openFullscreen() {
   let elem = document.documentElement
@@ -360,10 +364,12 @@ function openFullscreen() {
   } else if (elem.msRequestFullscreen) { /* IE/Edge */
     elem.msRequestFullscreen()
   }
+  /*
   if (window.innerHeight == screen.height) {
     fullscreenMode = true;
   } else {
     fullscreenMode = false;
   }
+  */
 }
 

@@ -14,7 +14,7 @@ export let lastOSC = 0;
 export let OSCdepthData;
 export let OSCdepthW; // width of data array
 export let OSCdepthH; // width of height array
-let tracking;
+export let OSCtracking = false;
 
 export function setUpOSC(depthEnabled) {
 
@@ -83,9 +83,9 @@ function updateOSC() {
   function refreshData(msg) {
     lastOSC = millis();
   //  updatePosition(msg.args[3], msg.args[4], msg.args[5]);
-  realsensePos = {x:msg.args[3], y:msg.args[4], z:msg.args[5]}
+    realsensePos = {x:msg.args[3], y:msg.args[4], z:msg.args[5]}
     // depth data
-    tracking = boolean(msg.args[6]);
+    OSCtracking = boolean(msg.args[6]);
     if (enableDepthStream) {
       OSCdepthW = msg.args[0];
       OSCdepthH = msg.args[1];

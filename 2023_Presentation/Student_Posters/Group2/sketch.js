@@ -6,7 +6,7 @@ function setup() {
 }
 
 function draw() {
-  background(0, 0, 0, 50);
+  background(255, 0, 0, 50);
   fill(255);
   wordEffect("FUTURE", poster.screens[0].cntX, poster.screens[0].cntY);
   wordEffect("NOW", poster.screens[1].cntX, poster.screens[1].cntY);

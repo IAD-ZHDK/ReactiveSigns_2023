@@ -14,6 +14,7 @@ function draw() {
   //lineEffect()
   pixelEffect()
  /*important!*/ poster.posterTasks(); // do not remove this last line!
+ 
 }
 
 function pixelEffect() {

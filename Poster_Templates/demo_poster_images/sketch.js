@@ -4,7 +4,7 @@ let imagCount = 119; //119;
 
 function preload() {
   for(let i=0;i<imagCount;i++) {
-    let seriesNo = nf(i, 3); // this formats the index nummger into a string with 3 digits total. 
+    let seriesNo = nf(i, 3); // this formats the index number into a string with 3 digits total. 
     images[i] = loadImage('images/image'+seriesNo+'.jpg'); // load up all images 
   }
 }
