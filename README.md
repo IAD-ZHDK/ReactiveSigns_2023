@@ -101,4 +101,4 @@ Hit the play button.
 #  Recording Screen Capture 
 
 - Press Shift-R to start recording
-- Press Shift-S to stop and save recording to your downloads folders
+- Press Shift-S to stop and save recording to your download folders

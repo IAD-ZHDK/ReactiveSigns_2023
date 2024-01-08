@@ -27,8 +27,8 @@ function draw() {
   textAlign(CENTER, CENTER);
   textSize(200 * poster.vw)
   textFont(font2);
-  backgroundEffect("I I I I I I I I I I I I I I I", poster.screens[0].cntX, poster.screens[0].cntY);
-  backgroundEffectBack("I I I I I I I I I I I I I I I", poster.screens[1].cntX, poster.screens[1].cntY);
+  backgroundEffect("I I I I I I I I I I I I I I I", poster.screens[0].cntX, poster.screens[0].cntY, 1);
+  backgroundEffect("I I I I I I I I I I I I I I I", poster.screens[1].cntX, poster.screens[1].cntY, -1);
   pop();
 
   push();
@@ -36,7 +36,7 @@ function draw() {
   fill(255)
   textSize(35 * poster.vw);
   textFont(font);
-  wordEffect(Anagram1, poster.screens[0].cntX*2, poster.screens[0].cntY);
+  wordEffect(Anagram1, poster.screens[0].cntX*2, poster.screens[0].cntY, -1);
   pop();
 
   push();
@@ -44,7 +44,7 @@ function draw() {
   fill(255)
   textSize(35 * poster.vw);
   textFont(font);
-  wordEffect2(Anagram2, poster.screens[0].cntX*2, poster.screens[0].cntY);
+  wordEffect(Anagram2, poster.screens[0].cntX*2, poster.screens[0].cntY, 1);
   pop();
 
 /*important!*/ poster.posterTasks(); // do not remove this last line!  
@@ -59,14 +59,14 @@ function windowScaled() { // this is a custom event called whenever the poster i
 let Rotationfactor = 2
 let Rotationfactor2 = 1
 
-function backgroundEffect(word, x, y) {
+function backgroundEffect(word, x, y, direction) {
   push()
   translate(x , y);
-  rotate(poster.posNormal.x * Rotationfactor * PI);
-  text(word, 0, -(1 * poster.vw))
+  rotate(poster.posNormal.x * Rotationfactor * (PI*direction));
+  text(word, 0, -(1 * poster.vw)) 
   pop();
 }
-
+/*
 function backgroundEffectBack(word, x ,y) {
   push()
   translate(x, y);
@@ -74,10 +74,10 @@ function backgroundEffectBack(word, x ,y) {
   text(word, 0, -(1 * poster.vw))
   pop();
 }
-
+*/
 
 //Option
-function wordEffect(Anagram1, x, y) {
+function wordEffect(Anagram1, x, y, direction) {
   push()
   translate(x, y);
   let bbox = font.textBounds(Anagram1,0,0);
@@ -87,13 +87,13 @@ function wordEffect(Anagram1, x, y) {
 
   let mapedAngle = map(averageAngle,0.0, 1.0, radians(-90), radians(270))
   console.log(degrees(mapedAngle));
-  rotate(-mapedAngle);
+  rotate(direction*mapedAngle);
   translate(-bbox.w/2, bbox.h/2 - 290);
   text(Anagram1, 0, -(.5 * poster.vw))
-  circle(0,0,100);
   pop();
 }
 //Potion
+/*
 function wordEffect2(Anagram2, x, y) {
   push()
   translate(x, y);
@@ -111,6 +111,6 @@ function wordEffect2(Anagram2, x, y) {
   rect(bbox.x, bbox.y, bbox.w, bbox.h);
   pop();
 }
-
+*/
 
 
