@@ -3,7 +3,10 @@ import { Camera } from './webcam.js'
 import { setupMoveNet, stopMoveNet, POSE_CONFIG, poses, AdjacentPairs } from './MoveNetTensorFlow.js'
 import { webCamSketch } from './debugDisplay.js'
 import { setUpGui, dragElement } from './GUI.js'
-import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH, OSCtracking} from './OSC_Control.js'
+import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH, OSCtracking } from './OSC_Control.js'
+import { recordCanvas, recordSetup, stopRecordCanvas, recording} from './recordCanvas.js'
+
+
 
 // debug gui
 let Settings = {
@@ -12,6 +15,8 @@ let Settings = {
 
 
 let webCamWrapper;
+
+
 const pageWidth = 1080 * 2; // resolution 
 const pageHeight = 1920; //
 
@@ -39,7 +44,7 @@ let enableDepth = false;
 
 
 export function setup(p5Instance, modelURL, _enableDepth) {
-
+  recordSetup();
   if (_enableDepth != undefined) {
     enableDepth = _enableDepth
     setUpOSC(enableDepth) // depthEnabled, rgbEnabled
@@ -53,8 +58,12 @@ export function setup(p5Instance, modelURL, _enableDepth) {
   correctAspectRatio();
   mainP5Sketch = p5Instance;
   mainP5Sketch.mousePressed = function () {
-    if (mainP5Sketch.mouseX > 0 && mainP5Sketch.mouseY > 0 && mainP5Sketch.mouseX < width && mainP5Sketch.mouseY < height)
-      openFullscreen();
+
+    if (mouseButton === LEFT) {
+      if (mainP5Sketch.mouseX > 0 && mainP5Sketch.mouseY > 0 && mainP5Sketch.mouseX < width && mainP5Sketch.mouseY < height) {
+        openFullscreen();
+      }
+    }
   }
 
   document.addEventListener('fullscreenchange', (event) => {
@@ -73,6 +82,31 @@ export function setup(p5Instance, modelURL, _enableDepth) {
   });
   window.onresize = resized;
 
+  const pressed = new Set();
+
+  mainP5Sketch.keyPressed = function (evt) {
+    const { code } = evt;
+    if (!pressed.has(code)) {
+      pressed.add(code);
+      console.log(pressed);
+      if (pressed.has("Shift") || pressed.has("ShiftLeft") && pressed.has("KeyR") && !recording) {
+        recordCanvas();
+      }
+      if (pressed.has("Shift") || pressed.has("ShiftLeft") && pressed.has("KeyS") && recording) {
+        stopRecordCanvas(); 
+      }
+    }
+
+    try {
+      window.parent.trackingCallback(code);
+    } catch (e) {
+    }
+  }
+
+  mainP5Sketch.keyReleased = function (evt) {
+    pressed.delete(evt.code);
+  }
+
 
   document.addEventListener('keypress', (event) => {
     // this is for passing keyboard events to parent when in presentation mode
@@ -81,9 +115,9 @@ export function setup(p5Instance, modelURL, _enableDepth) {
     } catch (e) {
     }
   });
-
-
 }
+
+// mouse click
 
 
 document.addEventListener("DOMContentLoaded", DOMContentLoadedEvent, false)
@@ -141,15 +175,7 @@ async function disableWebCamPreview() {
 }
 
 function datGuiCallback() {
-  // callback
-  /*
-    let webcam = document.getElementById("canvas-wrapper");
-    if (Settings.showWebcam) {
-        webcam.style.display = "block";
-    } else {
-        webcam.style.display = "none";
-    }
-  */
+
   console.log(Settings.poseDetection);
   if (!Settings.poseDetection) {
     disableWebCamPreview();
@@ -226,9 +252,9 @@ export function posterTasks() {
   }
 
   // show helplines when outside of fullscreen mode
- 
-  console.log(fullscreenMode);
+
   if (!fullscreenMode && debug) {
+    cursor()
     gui.show();
     showWebCamPreview(true);
     mainP5Sketch.push();
@@ -241,9 +267,9 @@ export function posterTasks() {
     fpsAverage += mainP5Sketch.frameRate() * 0.1;
     mainP5Sketch.textSize(1.2 * vw);
     mainP5Sketch.textAlign(mainP5Sketch.LEFT, mainP5Sketch.TOP);
-    mainP5Sketch.text("fps: " + Math.floor(fpsAverage), screens[0].x + vw, screens[0].y + vh*1);
-    mainP5Sketch.text("Streaming: " + oscSignal, screens[0].x + vw, screens[0].y + vh*3);
-    mainP5Sketch.text("Tracking: " + tracking, screens[0].x + vw, screens[0].y + vh*5);
+    mainP5Sketch.text("fps: " + Math.floor(fpsAverage), screens[0].x + vw, screens[0].y + vh * 1);
+    mainP5Sketch.text("Streaming: " + oscSignal, screens[0].x + vw, screens[0].y + vh * 3);
+    mainP5Sketch.text("Tracking: " + tracking, screens[0].x + vw, screens[0].y + vh * 5);
     mainP5Sketch.noFill();
     mainP5Sketch.stroke(0, 180, 180);
     mainP5Sketch.rectMode(CORNER);
@@ -258,6 +284,7 @@ export function posterTasks() {
     mainP5Sketch.circle(position.x, position.y, position.z * 10);
     mainP5Sketch.pop();
   } else {
+    noCursor();
     gui.hide();
     showWebCamPreview(false);
   }
@@ -343,7 +370,7 @@ export function getWindowHeight() {
   }
   console.log(displayHeight);
   console.log(displayWidth);
-  
+
   if (displayHeight == screen.height || displayWidth == screen.height || displayWidth == screen.width || displayHeight == screen.width) {
     fullscreenMode = true;
   } else {
@@ -351,7 +378,7 @@ export function getWindowHeight() {
   }
 
   return posterHeight;
-} 
+}
 
 function openFullscreen() {
   let elem = document.documentElement
@@ -372,4 +399,6 @@ function openFullscreen() {
   }
   */
 }
+
+// video
 
