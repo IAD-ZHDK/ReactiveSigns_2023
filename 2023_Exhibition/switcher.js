@@ -95,12 +95,19 @@ function transition(posterNo) {
 
 
 function intervalHandler() {
+  console.log("intervalStart")
  // console.log("streaming" + streaming + ", trackingActive" + trackingActive);
   //if (!trackingActive && streaming) {
     clearInterval(myInterval);
     myInterval = setInterval(intervalHandler, intervalTime)
-    //changePoster()
-    transition()
+
+    if (currentPoster<posters.length-1) {
+      currentPoster++;
+    } else {
+      currentPoster = 0;
+    }
+    pickPoster(currentPoster)
+   // transition()
   /*  } else if (!streaming) {
     // not streaming! always show poster 1
     clearInterval(myInterval);
@@ -116,13 +123,5 @@ function intervalHandler() {
 }
 
 
-//let myInterval = setInterval(intervalHandler, intervalTime); 
+let myInterval = setInterval(intervalHandler, intervalTime); 
 
-/*
-document.addEventListener('keypress', pickPoster, true);
-
-document.addEventListener("resize", (event) => {
-  console.log("resize")
-  document.addEventListener('keypress', pickPoster, true);
-});
-*/

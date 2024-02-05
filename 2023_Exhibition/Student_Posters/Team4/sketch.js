@@ -112,9 +112,6 @@ function draw() {
     }
     
 
-
-
-
   poster.posterTasks(); // do not remove this last line!
 }
 

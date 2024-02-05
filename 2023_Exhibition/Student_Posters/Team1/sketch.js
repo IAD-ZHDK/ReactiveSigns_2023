@@ -1,57 +1,87 @@
-let font;
+let particles = [];
+let img;
+let blackPixels = [];
+const particleCount = 10000; // You might need to adjust this for performance
+let isMouseOver = false;
+
 function preload() {
- font = loadFont('barlow_condensed.otf')
-//  font = loadFont('inconsolata.otf');
+  img = loadImage('./assets/Neural-Unreal.jpg'); // Make sure the path is correct
 }
 
 function setup() {
-   /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight()); // Don't remove this line. 
-  /*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line. 
-  //textAlign(CENTER);
-  textFont(font);
-  textSize(20 * poster.vw);
+  /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight()); // Don't remove this line. //is to take the size from the library
+ /*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line. //to use the webcam for movement
+ setupPoints();
+}
+
+function setupPoints() {
+  blackPixels = [];
+  img.loadPixels();
+  img.resize(100, 100);
+  // Iterate over all pixels in the image and store the positions of black pixels
+  for (let x = 0; x < img.width; x++) {
+    for (let y = 0; y < img.height; y++) {
+      let i = (x + y * img.width) * 4; // Index in the pixel array
+      // A pixel is considered black if the red, green, and blue components are all less than a threshold
+      if (img.pixels[i] < 128 && img.pixels[i + 1] < 128 && img.pixels[i + 2] < 128) {
+        let newX  = (x/img.width ) * width;
+        let newY = (y/img.height) * height;
+        blackPixels.push(createVector(newX, newY));
+      }
+    }
+  }
+  console.log(blackPixels.length);
+  // Resize the image to fit the canvas
+ 
+
+  // Create particles
+  for (let i = 0; i < particleCount; i++) {
+    let particle = new Particle(random(width), random(height))
+    particle.target = blackPixels[floor(random(blackPixels.length))]
+    particles.push(particle);
+  }
+
+
 }
 
 function draw() {
-  background(0,0,0,70);
-	fill(255);
-  strokeWeight(1);
-  stroke(100);
-  let spacingX = width/40;
-  let spacingY = height/35;
-
-  for(let i=0;i<40;i++) {
-    let x = spacingX*i 
-    line(x,0,x,height)
+ background(0, 0, 0, 50);
+ fill(255);
+ //wordEffect("FUTURE", poster.screens[0].cntX, poster.screens[0].cntY); //it locates the middle of the screen cntX = middle of the screen
+ //wordEffect("NOW", poster.screens[1].cntX, poster.screens[1].cntY);
+ if (isMouseOver) {
+  attractToBlackPixels();
+} else {
+  for (let p of particles) {
+    p.wander();
+    p.update();
+    p.show();
   }
-  for(let i=0;i<35;i++) {
-    let y = spacingY*i 
-    line(0,y,width,y)
-  }
-
-  wordEffect("TEAM 1", poster.screens[0].cntX, poster.screens[0].cntY);
-  wordEffect("TEAM 1", poster.screens[1].cntX, poster.screens[1].cntY);
-/*important!*/ poster.posterTasks(); // do not remove this last line!  
 }
+/*important!*/ poster.posterTasks(); // do not remove this last line!  //it runs every line
+}
+
 
 function windowScaled() { // this is a custom event called whenever the poster is scaled
-  textSize(20 * poster.vw);
+ textSize(10 * poster.vw);
 }
 
-function wordEffect(word, x, y) {
-  let bbox = font.textBounds(word, 0, 0, textSize());
-  push()
-  translate(x, y);
-  let angle = constrain(poster.posNormal.x,0.2,0.8);
-  angle = map(angle,0.2,0.8,0,1);
-  angle = angle * 2 * PI
-  rotate(angle);
-  text(word,-bbox.w/2,bbox.h/2)
-  pop()
+function mouseMoved() {
+  // Check if the mouse is over the specified areas
+  isMouseOver = (poster.position.x > width / 4 && poster.position.x < width / 4 + 200) || // Area 1
+                (poster.position.x > 3 * width / 4 && poster.position.x < 3 * width / 4 + 200); // Area 2
 }
 
 
+function attractToBlackPixels() {
+  for (let p of particles) {
+  //  let closestBlack = p.findClosestPoint(blackPixels);
 
-
-
-
+    //console.log(closestBlack);
+    //if (closestBlack) {
+      p.seek(p.target);
+      p.update();
+      p.show();
+ //   }
+  }
+}
