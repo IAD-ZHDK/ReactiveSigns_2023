@@ -10,6 +10,7 @@ function setup() {
   //textAlign(CENTER);
   textFont(font);
   textSize(20 * poster.vw);
+  poster.setDebug(false);
 }
 
 function draw() {
@@ -45,6 +46,7 @@ function wordEffect(word, x, y) {
   let angle = constrain(poster.posNormal.x,0.2,0.8);
   angle = map(angle,0.2,0.8,0,1);
   angle = angle * 2 * PI
+  angle += PI // make sure it's the right way up when tracker is mid screen
   rotate(angle);
   text(word,-bbox.w/2,bbox.h/2)
   pop()

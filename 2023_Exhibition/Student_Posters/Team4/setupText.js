@@ -102,7 +102,6 @@ function setupText() {
 				symbols[i].endX = symbols[randomIndex].endX;
 				symbols[i].endY = symbols[randomIndex].endY;
 		}	*/
-	console.log(symbols);
 }
 
 function hasWhiteSpace(s) {

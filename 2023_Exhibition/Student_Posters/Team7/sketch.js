@@ -1,5 +1,6 @@
 let cols = 40;
 let rows = 20;
+let inverted = false;
 
 let points = [];
 
@@ -62,15 +63,19 @@ let blocks2 = [
 
 ];
 
+let bgColor = 0; // changes to 255 when 0.95 is hitted (spring.js)
+
 
 function setup() {
 
 /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight()); // Don't remove this line. 
 /*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line.
 
+  noCursor();
+
   textAlign(CENTER, CENTER);
   setupGrid()
-
+  poster.setDebug(true);
 }
 
 function windowScaled() {
@@ -89,15 +94,28 @@ function setupGrid() {
 }
 
 function draw() {
-/*important!*/ poster.posterTasks(); // do not remove this last line!  
+  if (poster.posNormal.x >= 0.95 && !inverted) {
+    inverted = true;
+    bgColor = 255;
+  } else if (poster.posNormal.x <= 0.05 && inverted){
+    inverted = false;
+    bgColor = 0;
+  }
 
-  background(0);
+
+  background(bgColor);
+  push();
   noStroke();
+
+ shearX(-PI / 30.0);
+  translate(poster.vw*10, 0)
 
   for (let i = 0; i < points.length; i++) {
     points[i].display();
 
    //filter(INVERT);
   }
+  pop()
+  /*important!*/ poster.posterTasks(); // do not remove this last line!  
 }
 

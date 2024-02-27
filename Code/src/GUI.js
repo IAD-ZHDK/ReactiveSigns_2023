@@ -9,19 +9,6 @@ function functionCallback() {
 
 function datGuiCallback() {
     // callback
-/*
-    let webcam = document.getElementById("canvas-wrapper");
-    if (Settings.showWebcam) {
-        webcam.style.display = "block";
-    } else {
-        webcam.style.display = "none";
-    }
-*/
-   // if (Settings.poseDetection) {
-     //   webcam.style.display = "block";
-//    } else {
-     //   webcam.style.display = "none";
-//    }
 
 }
 

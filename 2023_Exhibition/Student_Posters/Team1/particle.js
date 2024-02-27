@@ -1,3 +1,4 @@
+
 class Particle {
   constructor(x, y) {
     this.pos = createVector(x, y);
@@ -32,6 +33,7 @@ class Particle {
   }
 
   wander() {
+    // this is a little slow for some reason
     let wanderPoint = this.vel.copy();
     wanderPoint.setMag(50);
     wanderPoint.add(this.pos);
@@ -40,6 +42,7 @@ class Particle {
     let x = wanderRadius * cos(theta);
     let y = wanderRadius * sin(theta);
     wanderPoint.add(x, y);
+    
     this.seek(wanderPoint);
   }
 

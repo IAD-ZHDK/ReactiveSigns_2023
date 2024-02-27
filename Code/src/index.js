@@ -4,7 +4,7 @@ import { setupMoveNet, stopMoveNet, POSE_CONFIG, poses, AdjacentPairs } from './
 import { webCamSketch } from './debugDisplay.js'
 import { setUpGui, dragElement } from './GUI.js'
 import { setUpOSC, realsensePos, lastOSC, OSCdepthData, OSCdepthW, OSCdepthH, OSCtracking } from './OSC_Control.js'
-import { recordCanvas, recordSetup, stopRecordCanvas, recording} from './recordCanvas.js'
+import { recordCanvas, recordSetup, stopRecordCanvas, recording } from './recordCanvas.js'
 
 
 
@@ -12,7 +12,6 @@ import { recordCanvas, recordSetup, stopRecordCanvas, recording} from './recordC
 let Settings = {
   poseDetection: false,
 }
-
 
 let webCamWrapper;
 
@@ -41,15 +40,22 @@ let oscSignal = false;// osc signal
 let fullscreenMode = false;
 let fpsAverage = 0;
 let enableDepth = false;
+let animationLoopEnabled = true;
+export function setDebug(value) {
+  debug = value;
+}
 
+export function setup(p5Instance, modelURL, _enableDepth, _animationLoopEnabled) {
 
-export function setup(p5Instance, modelURL, _enableDepth) {
   recordSetup();
   if (_enableDepth != undefined) {
     enableDepth = _enableDepth
     setUpOSC(enableDepth) // depthEnabled, rgbEnabled
   } else {
     setUpOSC(false)
+  }
+  if (_animationLoopEnabled != undefined) {
+    _animationLoopEnabled = animationLoopEnabled;
   }
   POSE_CONFIG.modelUrl = modelURL;
   console.log(POSE_CONFIG.modelUrl);
@@ -93,7 +99,7 @@ export function setup(p5Instance, modelURL, _enableDepth) {
         recordCanvas();
       }
       if (pressed.has("Shift") || pressed.has("ShiftLeft") && pressed.has("KeyS") && recording) {
-        stopRecordCanvas(); 
+        stopRecordCanvas();
       }
     }
 
@@ -215,22 +221,7 @@ function cameraRestore() {
 
 export function posterTasks() {
   if (poses != undefined && Settings.poseDetection == true) {
-    // Get center point from all posses 
-    let averageCenterPoint = { x: 0, y: 0 };
-    for (const pose of poses) {
-      // let nosePosition = pose.keypoints[0]; // based off nose position 
-      let boxCenterX = pose.box.xMin + (pose.box.width / 2);
-      let boxCenterY = pose.box.yMin + (pose.box.height / 2);
-      averageCenterPoint.x += boxCenterX;
-      averageCenterPoint.y += boxCenterY;
-    }
-    averageCenterPoint.x = averageCenterPoint.x / poses.length;
-    averageCenterPoint.y = averageCenterPoint.y / poses.length;
-    if (!isNaN(averageCenterPoint.x) && !isNaN(averageCenterPoint.y)) {
-      updatePosition(1 - averageCenterPoint.x, averageCenterPoint.y, 1.0)
-    } else {
-      updatePosition(0.5, 0.5, 1.0)
-    }
+    handlePosenet();
   } else if (window.performance.now() - lastOSC < 1000 && realsensePos != undefined) {
     oscSignal = true;
     // realsense data available over osc
@@ -241,7 +232,8 @@ export function posterTasks() {
       depthW = OSCdepthW; // width of data array
       depthH = OSCdepthH; // width of height array
     }
-  } else {
+
+  } else  {
     oscSignal = false;
     // or just use mouse
     let mouseX = mainP5Sketch.mouseX / mainP5Sketch.width;
@@ -249,8 +241,12 @@ export function posterTasks() {
     let mouseY = mainP5Sketch.mouseY / mainP5Sketch.height;
     mouseY = mainP5Sketch.constrain(mouseY, 0, 1)
     updatePosition(mouseX, mouseY, 1.0)
+  } 
+  // light animation when tracking is false
+  if (animationLoopEnabled && tracking != true) {
+    let oscolation = 0.08 * sin(mainP5Sketch.frameCount / (mainP5Sketch.PI*50));
+    updatePosition(.5 + oscolation, .5, 1.0)
   }
-
   // show helplines when outside of fullscreen mode
 
   if (!fullscreenMode && debug) {
@@ -288,7 +284,31 @@ export function posterTasks() {
     gui.hide();
     showWebCamPreview(false);
   }
+  // show light animation when no one is infront of the camera
+
+
+
 }
+
+function handlePosenet() {
+  // Get center point from all posses 
+  let averageCenterPoint = { x: 0, y: 0 };
+  for (const pose of poses) {
+    // let nosePosition = pose.keypoints[0]; // based off nose position 
+    let boxCenterX = pose.box.xMin + (pose.box.width / 2);
+    let boxCenterY = pose.box.yMin + (pose.box.height / 2);
+    averageCenterPoint.x += boxCenterX;
+    averageCenterPoint.y += boxCenterY;
+  }
+  averageCenterPoint.x = averageCenterPoint.x / poses.length;
+  averageCenterPoint.y = averageCenterPoint.y / poses.length;
+  if (!isNaN(averageCenterPoint.x) && !isNaN(averageCenterPoint.y)) {
+    updatePosition(1 - averageCenterPoint.x, averageCenterPoint.y, 1.0)
+  } else {
+    updatePosition(0.5, 0.5, 1.0)
+  }
+}
+
 
 function correctAspectRatio() {
   let offsetX = 0;

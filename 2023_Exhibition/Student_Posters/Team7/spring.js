@@ -21,22 +21,30 @@ class Spring {
   
       this.block = blocks1;
       this.block2 = blocks2;
-
       this.transitionX = this.x;
+      this.Target = createVector(this.x, this.y);
     }
 
 	update() { 
-		let attractor = createVector(poster.position.x,poster.position.y);
+    this.Target = poster.position.copy();
+      // uncomment to fix to start image when no one is font of camera
+   // if (poster.tracking != true && this.Target.x>=0) {
+  //  this.Target.x -= 0.01;
+   // } else {
+
+   // }
+
+		let attractor = createVector(this.Target.x,this.Target.y);
 		let distanceX = abs(this.anchor.x - attractor.x);
 		let distanceY = abs(this.anchor.y - attractor.y);
 		distanceY += 1;
 		distanceY = distanceY/height
 
-		if (distanceX < poster.vw * 40 && poster.position.x > poster.vw* 10&& poster.position.x < width-poster.vw*5 ) {
+		if (distanceX < poster.vw * 40 && this.Target.x > poster.vw* 10&& this.Target.x < width-poster.vw*5 ) {
 			// make the point stick to the attractor 
 			this.velocity = attractor.copy();
 			this.velocity.sub(this.pos);
-			this.velocity.mult(0.01);
+			this.velocity.mult(0.001);
 			this.pos.x += this.velocity.x / distanceY;
 
       // Reset transitionX when not transitioning
@@ -70,12 +78,8 @@ class Spring {
               let y = this.y 
 
               let currentLetter = this.block
-
-              if (poster.posNormal.x >= 0.95) {
+              if (inverted) {
                 currentLetter = this.block2;
-              }
-        
-              if (poster.posNormal.x > 0.95) {
                 // Invert colors after 100px of mouseX
                 if (currentLetter == '0') {
                   fill(255); // White
