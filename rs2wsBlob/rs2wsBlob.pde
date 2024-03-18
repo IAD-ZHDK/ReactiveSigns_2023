@@ -33,21 +33,21 @@ int recordingCount = 0; //frame count for exported images
 PImage[] recordingFrames;
 int totalFrames = 0;
 //
-// croping 
+// croping
 //
 float cropY =  0.3;// percent
 float cropHeight =  0.5;// percent
 float cropX =  0.05;// percent
 float cropWidth = 0.9;// percent
 //
-// Websockets 
+// Websockets
 //
 final int PORT = 8025;
 WebsocketServer ws;
 RealSenseCamera camera = new RealSenseCamera(this);
 RSThresholdFilter thresholdFilter;
 //
-// camera params 
+// camera params
 //
 boolean cameraFlip = false;
 boolean cameraHorizontal = true;
@@ -81,7 +81,7 @@ void setup() {
   setupOSC();
   setupCamera();
 
-  opencv = new OpenCV(this, floor((WIDTH / DECIMATION)*cropWidth), floor((HEIGHT / DECIMATION) *cropHeight));  
+  opencv = new OpenCV(this, floor((WIDTH / DECIMATION)*cropWidth), floor((HEIGHT / DECIMATION) *cropHeight));
 
   println("Sending data on: ws://localhost:" + PORT + "/");
   // GUI
@@ -107,8 +107,8 @@ void setup() {
     .setMode(ControlP5.SWITCH)
     .setCaptionLabel("Allow Edits")
     ;
-    // toggle for rgb stream
-   cp5.addToggle("streamRGB")
+  // toggle for rgb stream
+  cp5.addToggle("streamRGB")
     .setPosition(100, height-90)
     .setSize(50, 20)
     .setValue(streamRGB)
@@ -226,7 +226,7 @@ void loadRecording() {
     for (int i=0; i<recordingFrames.length; i++) {
       try {
         recordingFrames[i] = loadImage("recordings/outputImage"+i+".jpg");
-      } 
+      }
       catch (Exception ex) {
         totalFrames = i;
         break;
@@ -276,7 +276,7 @@ void drawError() {
 }
 
 void drawCamara() {
-  
+
   PImage depth = getDepthImage();
   PImage rgbImage = camera.getColorImage();
   if (cameraFlip && !replaying) {
@@ -293,18 +293,18 @@ void drawCamara() {
     depth = g.get();
     //  rgb image
     if (streamRGB) {
-    PGraphics rgb;
-    rgb = createGraphics(rgbImage.width, rgbImage.height);
-    rgb.beginDraw();
-    rgb.pushMatrix();
-    rgb.scale(1, -1);
-    rgb.translate(0, -rgb.height);
-    rgb.image(rgbImage, 0, 0);
-    rgb.popMatrix();
-    rgb.endDraw();
-    rgbImage = rgb.get();
+      PGraphics rgb;
+      rgb = createGraphics(rgbImage.width, rgbImage.height);
+      rgb.beginDraw();
+      rgb.pushMatrix();
+      rgb.scale(1, -1);
+      rgb.translate(0, -rgb.height);
+      rgb.image(rgbImage, 0, 0);
+      rgb.popMatrix();
+      rgb.endDraw();
+      rgbImage = rgb.get();
     }
-  } 
+  }
   if (cameraHorizontal && !replaying) {
     // depth image
     PGraphics g;
@@ -318,33 +318,33 @@ void drawCamara() {
     g.endDraw();
     depth = g.get();
     //  rgb image
-     if (streamRGB) {
-    PGraphics rgb;
-    rgb = createGraphics(rgbImage.width, rgbImage.height);
-    rgb.beginDraw();
-    rgb.pushMatrix();
-    rgb.scale(-1, 1);
-    rgb.translate(-rgb.height, 0);
-    rgb.image(rgbImage, 0, 0);
-    rgb.popMatrix();
-    rgb.endDraw();
-    rgbImage = rgb.get();
-     }
+    if (streamRGB) {
+      PGraphics rgb;
+      rgb = createGraphics(rgbImage.width, rgbImage.height);
+      rgb.beginDraw();
+      rgb.pushMatrix();
+      rgb.scale(-1, 1);
+      rgb.translate(-rgb.height, 0);
+      rgb.image(rgbImage, 0, 0);
+      rgb.popMatrix();
+      rgb.endDraw();
+      rgbImage = rgb.get();
+    }
   }
-  
-  
-  
+
+
+
   PImage depthCrop = depth.get(floor(depth.width*cropX), floor(depth.height*cropY), floor(depth.width*cropWidth), floor(depth.height*cropHeight));
-  
-      if (streamRGB) {
-  PImage rgbCrop = rgbImage.get(floor(rgbImage.width*cropX), floor(rgbImage.height*cropY), floor(rgbImage.width*cropWidth), floor(rgbImage.height*cropHeight));
+
+  if (streamRGB) {
+    PImage rgbCrop = rgbImage.get(floor(rgbImage.width*cropX), floor(rgbImage.height*cropY), floor(rgbImage.width*cropWidth), floor(rgbImage.height*cropHeight));
     rgbCrop.resize(rgbCrop.width/DECIMATION, rgbCrop.height/DECIMATION);
     sendPImage(depthCrop, rgbCrop, singlePointAverage, trackingAtive, "/depth");
   } else {
-      sendPImage(depthCrop, depthCrop, singlePointAverage, trackingAtive, "/depth");
+    sendPImage(depthCrop, depthCrop, singlePointAverage, trackingAtive, "/depth");
   }
- 
- displayInterface(depth, depthCrop.width, depthCrop.height);
+
+  displayInterface(depth, depthCrop.width, depthCrop.height);
 
   // recording image for usage without camera
   //
@@ -359,20 +359,28 @@ void drawCamara() {
     fill(0, 255, 0);
     circle(singlePointAverage.x*width, singlePointAverage.y*height, singlePointAverage.z);
   }
-  
+
   // recording
   if (recording) {
     depth.save("data/recordings/outputImage"+recordingCount+".jpg");
     recordingCount++;
   }
-  
-
 }
 
 PImage getDepthImage() {
+
+
   if (cameraRunning) {
-    camera.readFrames();
-    return camera.getDepthImage();
+
+    try {
+      camera.readFrames();
+      return camera.getDepthImage();
+    }
+    catch (Exception ex) {
+      println("Error starting up realsense: " + ex.getMessage(), 30, 30);
+      setupCamera();
+      return defualtFrame;
+    }
   } else {
     if (!replaying) {
       animationFrame(defualtFrame);
@@ -388,7 +396,7 @@ void findPositions(PImage depthImage) {
   PVector point = new PVector(0.5, 0.5, 0.01);//  set the point to middle of tracking area
 
   if (contours.size() > 0) {
-    trackingAtive = true; 
+    trackingAtive = true;
     float xAverage = 0;
     float yAverage = 0;
     float zAverage = 0;
@@ -398,13 +406,13 @@ void findPositions(PImage depthImage) {
     for (int i = 0; i<contours.size(); i++) {
       Contour biggestContour = contours.get(i);
       Rectangle r = biggestContour.getBoundingBox();
-      // adjust for image resolution 
+      // adjust for image resolution
       float rx = r.x * DECIMATION;
       float ry = r.y * DECIMATION;
-      //ry += cropY*depthImage.height; 
+      //ry += cropY*depthImage.height;
       float rw = r.width * DECIMATION;
       float rh = r.height * DECIMATION;
-      float diameter = (float)(rw+rh)/2; // todo: make this scalable 
+      float diameter = (float)(rw+rh)/2; // todo: make this scalable
       if (diameter >= 100) {
         //blob outer
         push();
@@ -429,17 +437,17 @@ void findPositions(PImage depthImage) {
         multiPointTemp.add(new PVector(x / DECIMATION, y / DECIMATION, z / DECIMATION));
         count++;
       }
-    }  
+    }
     if (count>0) {
       lastTrackingMillis = millis();
-      // there is more than one person! 
+      // there is more than one person!
       xAverage = xAverage/count;
       yAverage = yAverage/count;
       zAverage = zAverage/count;
       point.set(xAverage, yAverage, zAverage);
       filterRatio = 0.95;
 
-      // find closest match from new blobs to average 
+      // find closest match from new blobs to average
       int[] indexOrder = new int[multiPointTemp.size()];
       for (int i = 0; i<multiPointTemp.size(); i++) {
         int closestIndex = 0;
@@ -467,12 +475,12 @@ void findPositions(PImage depthImage) {
       Collections.sort(multiPointAveraged, new XComparator());
       Collections.sort(multiPointTemp, new XComparator());
       //
-      // average single points 
+      // average single points
       int existingPoints = multiPointAveraged.size();
       for (int i = 0; i<multiPointTemp.size(); i++) {
-        PVector temp2 = multiPointTemp.get(i);   
+        PVector temp2 = multiPointTemp.get(i);
         if (i<existingPoints) {
-          // point is already tracked 
+          // point is already tracked
           PVector temp1 = multiPointAveraged.get(i);
           temp1.mult(0.9);
           temp2.mult(0.1);
@@ -485,7 +493,7 @@ void findPositions(PImage depthImage) {
     } else {
       // no blobs found
       if (millis() > lastTrackingMillis+400) {
-        // delay before setting active to false 
+        // delay before setting active to false
         trackingAtive = false;
       }
       filterRatio = 0.98;
@@ -517,7 +525,7 @@ void blobTracking(PImage depthImage) {
     opencv.erode();
     opencv.erode();
     contours = opencv.findContours(true, true);
-  } 
+  }
   catch(Throwable ex) {
     System.err.println("Error: " + ex.getMessage());
     ex.printStackTrace();
@@ -533,7 +541,7 @@ void animationFrame(PImage frame) {
     float reactorDistance = dist(x, y, width/2, height/2);
     int myStartTime = int(frameCount-reactorDistance);
     float angle = radians(myStartTime)*1.5;
-    int fill = floor(sin(angle)*127)+127;  
+    int fill = floor(sin(angle)*127)+127;
     fill = constrain(fill, 0, 255);
     frame.pixels[i] = color(fill, fill, fill, 255);
   }

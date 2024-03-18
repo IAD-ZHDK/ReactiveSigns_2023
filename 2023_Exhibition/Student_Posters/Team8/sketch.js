@@ -61,7 +61,7 @@ function preload() {
 
 function setup() {
   /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight(), WEBGL); // Don't remove this line. 
-  /*important!*/ poster.setup(this, "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line. 
+  /*important!*/ poster.setup(this, "/Poster_Templates/libraries/assets/models/movenet/model.json", false, false);  // Don't remove this line. 
   textFont(myFont); // impartant! WEBGL has no defualt font
   let cam = createCamera();
   console.log(cam);
@@ -83,6 +83,7 @@ function draw() {
   background(0, 0, 0);
   effect();
   /*important!*/ poster.posterTasks(); // do not remove this last line!  
+  
 }
 
 

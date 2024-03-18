@@ -13,7 +13,7 @@ font2 = loadFont("Druk-XXCondSuper.otf");
 
 function setup() {
    /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight()); // Don't remove this line. 
-  /*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line. 
+  /*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json", false, false);  // Don't remove this line. 
   textSize(10 * poster.vw);
 }
 
@@ -66,15 +66,6 @@ function backgroundEffect(word, x, y, direction) {
   text(word, 0, -(1 * poster.vw)) 
   pop();
 }
-/*
-function backgroundEffectBack(word, x ,y) {
-  push()
-  translate(x, y);
-  rotate(poster.posNormal.x * Rotationfactor * - PI);
-  text(word, 0, -(1 * poster.vw))
-  pop();
-}
-*/
 
 //Option
 function wordEffect(Anagram1, x, y, direction) {
@@ -86,9 +77,12 @@ function wordEffect(Anagram1, x, y, direction) {
   averageAngle += poster.posNormal.x  * (1.0-factor);
 
   let mapedAngle = map(averageAngle,0.0, 1.0, radians(-90), radians(270))
-  console.log(degrees(mapedAngle));
   rotate(direction*mapedAngle);
-  translate(-bbox.w/2, bbox.h/2 - 290);
+  
+ // translate(-bbox.w/2, bbox.h/2 - 290);
+  let halfScreenWidth = poster.screens[0].cntX;
+  let textOfssetCorection = halfScreenWidth*0.03
+  translate(-bbox.w/2, (bbox.h/2)-halfScreenWidth-textOfssetCorection );
   text(Anagram1, 0, -(.5 * poster.vw))
   pop();
 }

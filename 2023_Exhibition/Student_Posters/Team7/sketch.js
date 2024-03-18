@@ -64,18 +64,19 @@ let blocks2 = [
 ];
 
 let bgColor = 0; // changes to 255 when 0.95 is hitted (spring.js)
-
+let targetMovingAverage;
 
 function setup() {
 
 /*important!*/ createCanvas(poster.getWindowWidth(), poster.getWindowHeight()); // Don't remove this line. 
-/*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json");  // Don't remove this line.
+/*important!*/ poster.setup(this,  "/Poster_Templates/libraries/assets/models/movenet/model.json", false, false);  // Don't remove this line.
 
   noCursor();
 
   textAlign(CENTER, CENTER);
   setupGrid()
   poster.setDebug(true);
+  targetMovingAverage = createVector(1, 1);
 }
 
 function windowScaled() {
@@ -94,14 +95,32 @@ function setupGrid() {
 }
 
 function draw() {
-  if (poster.posNormal.x >= 0.95 && !inverted) {
+
+
+  if (poster.posNormal.x >= 0.80 && !inverted) {
     inverted = true;
     bgColor = 255;
-  } else if (poster.posNormal.x <= 0.05 && inverted){
+  } else if (poster.posNormal.x <= 0.20 && inverted){
     inverted = false;
     bgColor = 0;
   }
 
+  if(!poster.tracking && poster.oscSignal) {
+    // no one is in front of the camera
+    // move target to closest side
+    let target = createVector(0, height/2);
+    if (targetMovingAverage.x > width/2) {
+      target.x = width;
+    }
+    targetMovingAverage.mult(0.9);
+    target.mult(0.1);
+    targetMovingAverage.add(target);
+  } else {
+    let target = poster.position.copy();
+    targetMovingAverage.mult(0.9);
+    target.mult(0.1);
+    targetMovingAverage.add(target);
+  }
 
   background(bgColor);
   push();
@@ -111,8 +130,7 @@ function draw() {
   translate(poster.vw*10, 0)
 
   for (let i = 0; i < points.length; i++) {
-    points[i].display();
-
+    points[i].display(targetMovingAverage);
    //filter(INVERT);
   }
   pop()

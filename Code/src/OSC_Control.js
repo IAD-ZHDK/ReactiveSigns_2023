@@ -52,19 +52,6 @@ export function setUpOSC(depthEnabled) {
       }
     }
   }
-  /*
-  function out() {
-    if (oscSignal == false) {
-      tracking = false;
-    }
-  }
-  function over() {
-    if (oscSignal == false) {
-      tracking = true;
-    }
-  }
- */ 
-
 
 function updateOSC() {
     // reconnect osc

@@ -28,6 +28,7 @@ export let depthData;
 export let depthW; // width of data array
 export let depthH; // width of height array
 export let tracking; // width of height array
+export let oscSignal = false;// osc signal
 export let debug = true;
 
 // helper variables for scalable positioning
@@ -36,7 +37,7 @@ export let vw = 1; // 1 percent of viewport width;
 export let vh = 1; // 1 percent of viewport height;
 
 let gui;
-let oscSignal = false;// osc signal
+
 let fullscreenMode = false;
 let fpsAverage = 0;
 let enableDepth = false;
@@ -55,7 +56,7 @@ export function setup(p5Instance, modelURL, _enableDepth, _animationLoopEnabled)
     setUpOSC(false)
   }
   if (_animationLoopEnabled != undefined) {
-    _animationLoopEnabled = animationLoopEnabled;
+     animationLoopEnabled = _animationLoopEnabled;
   }
   POSE_CONFIG.modelUrl = modelURL;
   console.log(POSE_CONFIG.modelUrl);
@@ -243,7 +244,7 @@ export function posterTasks() {
     updatePosition(mouseX, mouseY, 1.0)
   } 
   // light animation when tracking is false
-  if (animationLoopEnabled && tracking != true) {
+  if (animationLoopEnabled && tracking != true && oscSignal == true) {
     let oscolation = 0.08 * sin(mainP5Sketch.frameCount / (mainP5Sketch.PI*50));
     updatePosition(.5 + oscolation, .5, 1.0)
   }

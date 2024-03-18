@@ -1,3 +1,4 @@
+// requires NPM local server module 
 @echo off
 cd "C:\Users\user\Desktop\"
 echo starting...
@@ -18,7 +19,7 @@ TIMEOUT /t 1
 echo ensure that the port is free
 CMD /C npx kill-port --port 8080 &
 
-TIMEOUT /t 5
+TIMEOUT /t 2
 start chrome --start-fullscreen http://localhost:8080
 //start chrome --start http://localhost:8080 &
 

@@ -1,3 +1,5 @@
+// using python local server 
+
 cd "C:\Users\user\Desktop\"
 //echo --resize screen and start realsense
 //start SpannedScreen.lnk

@@ -25,8 +25,8 @@ class Spring {
       this.Target = createVector(this.x, this.y);
     }
 
-	update() { 
-    this.Target = poster.position.copy();
+	update(_target) { 
+    this.Target = _target; 
       // uncomment to fix to start image when no one is font of camera
    // if (poster.tracking != true && this.Target.x>=0) {
   //  this.Target.x -= 0.01;
@@ -71,8 +71,8 @@ class Spring {
 
 	}
 	
-	display() {
-		this.update();
+	display(_target) {
+		this.update(_target);
 
               let x = this.x 
               let y = this.y 
